@@ -36,3 +36,32 @@ jobs:
         run: |
           echo "This command will likely fail with StaleReason: build ID mismatch"
           go list -json -deps ./...
+
+  go-lint:
+    name: Go Linting, Tests, and Snyk
+    runs-on: sentinel-heavy-use-runner
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+        with:
+          go-version: 1.24.2
+
+      # ... (Secret fetching and Private Mod steps) ...
+
+      - name: Cache go dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-mod-v${{ env.CACHE_VERSION }}-${{ hashFiles('**/go.sum') }}
+
+      - name: Run Tests
+        run: make go-unit-tests
+
+      # RUN SNYK HERE
+      - name: Snyk Scan
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+          GOTOOLCHAIN: local
+        run: |
+          npm install -g snyk
+          snyk test --severity-threshold=high
