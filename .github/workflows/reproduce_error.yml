@@ -1,0 +1,38 @@
+name: Reproduce Build ID Mismatch
+
+on: [push, workflow_dispatch]
+
+jobs:
+  # Job 1: Creates the "Poisoned" Cache
+  build-and-cache:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go (Older Version)
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24.0' # Different patch version
+          cache: true
+
+      - name: Build to fill cache
+        run: go build -o demo .
+
+  # Job 2: Fails because it sees the 1.24.0 artifacts while running 1.24.2
+  test-mismatch:
+    needs: build-and-cache
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go (Newer Version)
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24.2'
+          # We manually restore the cache to simulate the conflict
+          cache: true
+
+      - name: Demonstrate Error
+        run: |
+          echo "This command will likely fail with StaleReason: build ID mismatch"
+          go list -json -deps ./...
