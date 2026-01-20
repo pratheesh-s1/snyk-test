@@ -1,18 +1,8 @@
 name: Snyk example
 on: push
 jobs:
-  security:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@master
-      - uses: snyk/actions/setup@master
-        with:
-          snyk-version: latest
-      - uses: actions/setup-go@v3
-        with:
-          go-version: 1.25
-
-      - name: Snyk monitor
-        run: snyk test
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+  snyk-go:
+    uses: pratheesh-s1/github-actions/.github/workflows/snyk-go.yaml@main
+    with:
+      go-version: "1.22"
+      severity-threshold: high
