@@ -4,6 +4,7 @@ jobs:
   snyk-go:
     uses: pratheesh-s1/github-actions/.github/workflows/snyk-go.yaml@main
     with:
+      snyk-token: ${{ secrets.SNYK_TOKEN }}
       runner-type: ubuntu-latest
       snyk-version: v1.1301.2
       go-version: "1.22"
