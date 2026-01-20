@@ -4,7 +4,7 @@ jobs:
   snyk-go:
     uses: pratheesh-s1/github-actions/.github/workflows/snyk-go.yaml@main
     with:
-      runner-type: ubuntu
+      runner-type: ubuntu-latest
       snyk-version: latest
       go-version: "1.22"
       severity-threshold: high
